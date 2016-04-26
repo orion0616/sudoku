@@ -49,105 +49,14 @@ bool sudoku::checkHorizontal(int num){
 bool sudoku::checkBox(int num){
         int row = num/9;
         int column = num%9;
-        int boxx = row/3;
-        int boxy = column/3;
-        if(boxx == 0 && boxy == 0){
-                for(int i=0;i<3;i++){
-                        for(int j=0;j<3;j++){
-                                if(boxx*3+i == row || boxy*3+j == column){
-                                        continue;
-                                }
-                                if(values[0+i][0+j] == values[row][column])
-                                        return false;
-                        }
-                }
-        }
-        else if(boxx == 0 && boxy == 1){
-                for(int i=0;i<3;i++){
-                        for(int j=0;j<3;j++){
-                                if(boxx*3+i == row || boxy*3+j == column){
-                                        continue;
-                                }
-                                if(values[0+i][3+j] == values[row][column])
-                                        return false;
-                        }
-                }
-        }
-        else if(boxx == 0 && boxy == 2){
-                for(int i=0;i<3;i++){
-                        for(int j=0;j<3;j++){
-                                if(boxx*3+i == row || boxy*3+j == column){
-                                        continue;
-                                }
-                                if(values[0+i][6+j] == values[row][column])
-                                        return false;
-                        }
-                }
-        }
-        else if(boxx == 1 && boxy == 0){
-                for(int i=0;i<3;i++){
-                        for(int j=0;j<3;j++){
-                                if(boxx*3+i == row || boxy*3+j == column){
-                                        continue;
-                                }
-                                if(values[3+i][0+j] == values[row][column])
-                                        return false;
-                        }
-                }
-        }
-        else if(boxx == 1 && boxy == 1){
-                for(int i=0;i<3;i++){
-                        for(int j=0;j<3;j++){
-                                if(boxx*3+i == row || boxy*3+j == column){
-                                        continue;
-                                }
-                                if(values[3+i][3+j] == values[row][column])
-                                        return false;
-                        }
-                }
-        }
-        else if(boxx == 1 && boxy == 2){
-                for(int i=0;i<3;i++){
-                        for(int j=0;j<3;j++){
-                                if(boxx*3+i == row || boxy*3+j == column){
-                                        continue;
-                                }
-                                if(values[3+i][6+j] == values[row][column])
-                                        return false;
-                        }
-                }
-        }
-        else if (boxx == 2 && boxy == 0){
-                for(int i=0;i<3;i++){
-                        for(int j=0;j<3;j++){
-                                if(boxx*3+i == row || boxy*3+j == column){
-                                        continue;
-                                }
-                                if(values[6+i][0+j] == values[row][column])
-                                        return false;
-                        }
-                }
-        }
-        else if (boxx == 2 && boxy == 1){
-                for(int i=0;i<3;i++){
-                        for(int j=0;j<3;j++){
-                                if(boxx*3+i == row || boxy*3+j == column){
-                                        continue;
-                                }
-                                if(values[6+i][3+j] == values[row][column])
-                                        return false;
-                        }
-                }
-        }
-        else{
-                for(int i=0;i<3;i++){
-                        for(int j=0;j<3;j++){
-                                if(boxx*3+i == row || boxy*3+j == column){
-                                        continue;
-                                }
-                                if(values[6+i][6+j] == values[row][column])
-                                        return false;
-                        }
+        int x = row/3*3;
+        int y = column/3*3;
+        for(int i=0;i<3;i++){
+                for(int j=0;j<3;j++){
+                        if(x+i == row || y+j == column)
+                                continue;
+                        if(values[x+i][y+j] == values[row][column])
+                                return false;
                 }
         }
         return true;
