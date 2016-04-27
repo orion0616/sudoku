@@ -115,7 +115,7 @@ string backtrackingdfs(sudoku prob){
                                 unassignedVariable.push_back(i*9+j);
                 }
         }
-        //there are something better choices
+        //there are some better choices
         int var = unassignedVariable[0];
         for(int i=1;i<=9;i++){
                 prob.values[var/9][var%9] = i;
