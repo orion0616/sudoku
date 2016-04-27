@@ -1,6 +1,8 @@
 #include <iostream>
+#include <stdio.h>
 #include <vector>
 #include <string>
+#include <sys/time.h>
 
 using namespace std;
 
@@ -101,7 +103,6 @@ void stringToValues(string s){
                 }
                 cout << endl;
         }
-        cout << endl;
 }
 
 string backtrackingdfs(sudoku prob){
@@ -135,7 +136,19 @@ string backtrackingdfs(sudoku prob){
         return "failure";
 }
 
+void printTime(timeval t0, timeval t1){
+        t1.tv_sec -= t0.tv_sec;
+        if (t1.tv_usec < t0.tv_usec) {
+                t1.tv_sec -= 1;
+                t1.tv_usec += 1000000 - t0.tv_usec;
+        } else {
+                t1.tv_usec -= t0.tv_usec;
+        }
+        printf("%ld.%06d sec\n\n", t1.tv_sec, t1.tv_usec);
+}
+
 int main(){
+        struct timeval t0, t1;
         string exp,result;
         while(cin >> exp){
                 sudoku problem;
@@ -145,7 +158,10 @@ int main(){
                         else
                                 problem.values[i/9][i%9] = (int)exp[i]-(int)'0';
                 }
+                gettimeofday(&t0, NULL);
                 result = backtrackingdfs(problem);
+                gettimeofday(&t1, NULL);
                 stringToValues(result);
+                printTime(t0,t1);
         }
 }
