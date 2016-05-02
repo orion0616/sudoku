@@ -150,13 +150,25 @@ void printTime(timeval t0, timeval t1){
 int main(){
         struct timeval t0, t1;
         string exp,result;
+        vector<vector<int> > choices;
+        vector<int> all;
+        for(int i=1;i<=9;i++){
+                all.push_back(i);
+        }
+        for(int i=0;i<81;i++){
+                choices.push_back(all);
+        }
         while(cin >> exp){
                 sudoku problem;
                 for(int i=0;i<81;i++){
                         if(exp[i] == '.')
                                 problem.values[i/9][i%9] = 0;
-                        else
+                        else{
                                 problem.values[i/9][i%9] = (int)exp[i]-(int)'0';
+                                vector<int> tmp;
+                                tmp.push_back((int)exp[i]-(int)'0');
+                                choices[i] = tmp;
+                        }
                 }
                 gettimeofday(&t0, NULL);
                 result = backtrackingdfs(problem);
