@@ -6,6 +6,8 @@
 
 using namespace std;
 
+typedef vector<vector<int> > Choicelist;
+
 class sudoku{
         public:
                 sudoku(){}
@@ -136,6 +138,37 @@ string backtrackingdfs(sudoku prob){
         return "failure";
 }
 
+string btandfcandmrv(sudoku prob,Choicelist choices,int varchosen = -1){
+        string result;
+        if (prob.isComplete())
+                return prob.valuesToString();
+        vector<int> unassignedVariable;
+        for(int i=0;i<9;i++){
+                for(int j=0;j<9;j++){
+                        if(prob.values[i][j]==0)
+                                unassignedVariable.push_back(i*9+j);
+                }
+        }
+        //there are some better choices
+        int var = unassignedVariable[0];
+        for(int i=1;i<=9;i++){
+                prob.values[var/9][var%9] = i;
+                if(prob.checkConstraint(var)){
+                        result = btandfcandmrv(prob,choices,var);
+                        if(result == "failure"){
+                                prob.values[var/9][var%9] = 0;
+                        }
+                        else{
+                                return result;
+                        }
+                }
+                else{
+                        prob.values[var/9][var%9] = 0;
+                }
+        }
+        return "failure";
+}
+
 void printTime(timeval t0, timeval t1){
         t1.tv_sec -= t0.tv_sec;
         if (t1.tv_usec < t0.tv_usec) {
@@ -150,7 +183,7 @@ void printTime(timeval t0, timeval t1){
 int main(){
         struct timeval t0, t1;
         string exp,result;
-        vector<vector<int> > choices;
+        Choicelist choices;
         vector<int> all;
         for(int i=1;i<=9;i++){
                 all.push_back(i);
@@ -171,7 +204,7 @@ int main(){
                         }
                 }
                 gettimeofday(&t0, NULL);
-                result = backtrackingdfs(problem);
+                result = btandfcandmrv(problem,choices);
                 gettimeofday(&t1, NULL);
                 stringToValues(result);
                 printTime(t0,t1);
