@@ -5,4 +5,5 @@
 - minimum remaining value(future work)
 
 ##TODO
-- implement forward checking and minimum remaining value
+- implement forward checking and minimum remaining value -> done
+- more faster (need refactoring)
