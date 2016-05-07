@@ -2,11 +2,12 @@
 #include <stdio.h>
 #include <vector>
 #include <string>
+#include <set>
 #include <sys/time.h>
 
 using namespace std;
 
-typedef vector<vector<int> > Choicelist;
+typedef vector<set<int> > Choicelist;
 
 class sudoku{
         public:
@@ -138,21 +139,63 @@ string backtrackingdfs(sudoku prob){
         return "failure";
 }
 
+void updateList(sudoku prob,Choicelist& choices, int varchosen){
+        int row = varchosen/9;
+        int column = varchosen%9;
+        int value = prob.values[row][column];
+        //verticalを見て
+        for(int i=0;i<9;i++){
+                if(row == i)
+                        continue;
+                choices[i*9+column].erase(value);
+        }
+        //horizontalを見て
+        for(int i=0;i<9;i++){
+                if(column == i)
+                        continue;
+                choices[9*row+i].erase(value);
+        }
+        //boxを見る
+        int x = row/3*3;
+        int y = column/3*3;
+        for(int i=0;i<3;i++){
+                for(int j=0;j<3;j++){
+                        if(x+i == row || y+j == column)
+                                continue;
+                        choices[(x+i)*9+y+j].erase(value);
+                }
+        }
+        return;
+}
+
 string btandfcandmrv(sudoku prob,Choicelist choices,int varchosen = -1){
+        if(varchosen == -1){
+                for(int i=0;i<81;i++){
+                        if(prob.values[i/9][i%9]!=0)
+                                updateList(prob,choices,i);
+                }
+        }
+        else{
+                updateList(prob,choices,varchosen);
+        }
         string result;
         if (prob.isComplete())
                 return prob.valuesToString();
-        vector<int> unassignedVariable;
-        for(int i=0;i<9;i++){
-                for(int j=0;j<9;j++){
-                        if(prob.values[i][j]==0)
-                                unassignedVariable.push_back(i*9+j);
+        int min = 10;
+        int minvar = 100;
+        for(int i=0;i<81;i++){
+                if(prob.values[i/9][i%9] == 0){
+                        if(choices[i].size() < min){
+                                min = choices[i].size();
+                                minvar = i;
+                        }
                 }
         }
         //there are some better choices
-        int var = unassignedVariable[0];
-        for(int i=1;i<=9;i++){
-                prob.values[var/9][var%9] = i;
+        int var = minvar;
+        auto it = choices[var].begin();
+        for(;it!=choices[var].end();it++){
+                prob.values[var/9][var%9] = (*it);
                 if(prob.checkConstraint(var)){
                         result = btandfcandmrv(prob,choices,var);
                         if(result == "failure"){
@@ -183,30 +226,32 @@ void printTime(timeval t0, timeval t1){
 int main(){
         struct timeval t0, t1;
         string exp,result;
-        Choicelist choices;
-        vector<int> all;
+        // vector<int> all;
+        set<int> all;
         for(int i=1;i<=9;i++){
-                all.push_back(i);
-        }
-        for(int i=0;i<81;i++){
-                choices.push_back(all);
+                // all.push_back(i);
+                all.insert(i);
         }
         while(cin >> exp){
+                Choicelist choices;
+                for(int i=0;i<81;i++){
+                        choices.push_back(all);
+                }
                 sudoku problem;
                 for(int i=0;i<81;i++){
                         if(exp[i] == '.')
                                 problem.values[i/9][i%9] = 0;
                         else{
                                 problem.values[i/9][i%9] = (int)exp[i]-(int)'0';
-                                vector<int> tmp;
-                                tmp.push_back((int)exp[i]-(int)'0');
+                                set<int> tmp;
+                                tmp.insert((int)exp[i]-(int)'0');
                                 choices[i] = tmp;
                         }
                 }
                 gettimeofday(&t0, NULL);
                 result = btandfcandmrv(problem,choices);
                 gettimeofday(&t1, NULL);
-                stringToValues(result);
+                // stringToValues(result);
                 printTime(t0,t1);
         }
 }
