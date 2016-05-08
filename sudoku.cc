@@ -224,7 +224,7 @@ void printTime(timeval t0, timeval t1){
 }
 
 int main(){
-        struct timeval t0, t1;
+        struct timeval t0, t1,start,goal;
         string exp,result;
         // vector<int> all;
         set<int> all;
@@ -232,6 +232,7 @@ int main(){
                 // all.push_back(i);
                 all.insert(i);
         }
+        gettimeofday(&start,NULL);
         while(cin >> exp){
                 Choicelist choices;
                 for(int i=0;i<81;i++){
@@ -254,4 +255,6 @@ int main(){
                 // stringToValues(result);
                 printTime(t0,t1);
         }
+        gettimeofday(&goal,NULL);
+        printTime(start,goal);
 }
