@@ -161,8 +161,7 @@ string btandfcandmrv(sudoku prob,Choicelist choices,int varchosen = -1){
                 }
         }
         int var = minvar;
-        auto it = choices[var].begin();
-        for(;it!=choices[var].end();it++){
+        for(auto it = choices[var].begin();it!=choices[var].end();it++){
                 prob.values[var/9][var%9] = (*it);
                 if(prob.checkConstraint(var)){
                         result = btandfcandmrv(prob,choices,var);
