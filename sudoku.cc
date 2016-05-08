@@ -67,6 +67,45 @@ bool sudoku::checkBox(int num){
         return true;
 }
 
+int countV(sudoku& prob, Choicelist& list, int num){
+        int count = 0;
+        int column = num%9;
+        for(int i=0;i<9;i++){
+                if(prob.values[i][column] == 0)
+                        count++;
+        }
+        return 0;
+}
+int countH(sudoku& prob, Choicelist& list, int num){
+        int count = 0;
+        int row = num/9;
+        for(int i=0;i<9;i++){
+                if(prob.values[row][i] == 0)
+                        count++;
+        }
+        return count;
+}
+int countB(sudoku& prob, Choicelist& list, int num){
+        int count = 0;
+        int row = num/9;
+        int column = num%9;
+        int x = row/3*3;
+        int y = column/3*3;
+        for(int i=0;i<3;i++){
+                for(int j=0;j<3;j++){
+                        if(prob.values[x+i][y+j] == 0)
+                                count++;
+                }
+        }
+        return count;
+}
+
+bool degreeheuristic(sudoku& prob,Choicelist& list, int challenge, int champion){
+        int countChallenge = countV(prob,list,challenge) + countH(prob,list,challenge)+countB(prob,list,challenge);
+        int countChampion = countV(prob,list,champion) + countH(prob,list,champion)+countB(prob,list,champion);
+        return countChallenge > countChampion;
+} 
+
 bool sudoku::isComplete(){
         for(int i=0;i<9;i++){
                 for(int j=0;j<9;j++){
@@ -155,8 +194,16 @@ string btandfcandmrv(sudoku prob,Choicelist choices,int varchosen = -1){
         for(int i=0;i<81;i++){
                 if(prob.values[i/9][i%9] == 0){
                         if(choices[i].size() < min){
-                                min = choices[i].size();
-                                minvar = i;
+                                if(choices[i].size() == min){
+                                        //degree heuristicを用いてchoice
+                                        if(degreeheuristic(prob,choices,i,minvar)){
+                                                        minvar = i;
+                                         }
+                                }
+                                else{
+                                        min = choices[i].size();
+                                        minvar = i;
+                                }
                         }
                 }
         }
