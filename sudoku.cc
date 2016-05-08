@@ -108,54 +108,23 @@ void stringToValues(string s){
         }
 }
 
-string backtrackingdfs(sudoku prob){
-        string result;
-        if (prob.isComplete())
-                return prob.valuesToString();
-        vector<int> unassignedVariable;
-        for(int i=0;i<9;i++){
-                for(int j=0;j<9;j++){
-                        if(prob.values[i][j]==0)
-                                unassignedVariable.push_back(i*9+j);
-                }
-        }
-        //there are some better choices
-        int var = unassignedVariable[0];
-        for(int i=1;i<=9;i++){
-                prob.values[var/9][var%9] = i;
-                if(prob.checkConstraint(var)){
-                        result = backtrackingdfs(prob);
-                        if(result == "failure"){
-                                prob.values[var/9][var%9] = 0;
-                        }
-                        else{
-                                return result;
-                        }
-                }
-                else{
-                        prob.values[var/9][var%9] = 0;
-                }
-        }
-        return "failure";
-}
-
 void updateList(sudoku prob,Choicelist& choices, int varchosen){
         int row = varchosen/9;
         int column = varchosen%9;
         int value = prob.values[row][column];
-        //verticalを見て
+        //check vertical
         for(int i=0;i<9;i++){
                 if(row == i)
                         continue;
                 choices[i*9+column].erase(value);
         }
-        //horizontalを見て
+        //check horizontal
         for(int i=0;i<9;i++){
                 if(column == i)
                         continue;
                 choices[9*row+i].erase(value);
         }
-        //boxを見る
+        //check box
         int x = row/3*3;
         int y = column/3*3;
         for(int i=0;i<3;i++){
@@ -191,7 +160,6 @@ string btandfcandmrv(sudoku prob,Choicelist choices,int varchosen = -1){
                         }
                 }
         }
-        //there are some better choices
         int var = minvar;
         auto it = choices[var].begin();
         for(;it!=choices[var].end();it++){
@@ -226,10 +194,8 @@ void printTime(timeval t0, timeval t1){
 int main(){
         struct timeval t0, t1,start,goal;
         string exp,result;
-        // vector<int> all;
         set<int> all;
         for(int i=1;i<=9;i++){
-                // all.push_back(i);
                 all.insert(i);
         }
         gettimeofday(&start,NULL);
@@ -252,7 +218,6 @@ int main(){
                 gettimeofday(&t0, NULL);
                 result = btandfcandmrv(problem,choices);
                 gettimeofday(&t1, NULL);
-                // stringToValues(result);
                 printTime(t0,t1);
         }
         gettimeofday(&goal,NULL);
