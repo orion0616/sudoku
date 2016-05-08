@@ -2,6 +2,8 @@
 #include <stdio.h>
 #include <vector>
 #include <string>
+#include <utility>
+#include <queue>
 #include <set>
 #include <sys/time.h>
 
@@ -104,7 +106,7 @@ bool degreeheuristic(sudoku& prob,Choicelist& list, int challenge, int champion)
         int countChallenge = countV(prob,list,challenge) + countH(prob,list,challenge)+countB(prob,list,challenge);
         int countChampion = countV(prob,list,champion) + countH(prob,list,champion)+countB(prob,list,champion);
         return countChallenge > countChampion;
-} 
+}
 
 bool sudoku::isComplete(){
         for(int i=0;i<9;i++){
@@ -176,6 +178,33 @@ void updateList(sudoku& prob,Choicelist& choices, int varchosen){
         return;
 }
 
+bool operator<(const pair<int,int>& a,const pair<int,int>& b){
+        return a.second< b.second;
+}
+bool operator>(const pair<int,int>& a,const pair<int,int>& b){
+        return a.second> b.second;
+}
+
+priority_queue<pair<int,int> >  priorityCheck(const sudoku& prob,set<int> choices){
+        vector<pair<int,int> > pairs;
+        for(int i=1;i<=9;i++){
+                pairs.push_back(make_pair(i,0));
+        }
+        for(int i=0;i<9;i++){
+                for(int j=0;j<9;j++){
+                        if(prob.values[i][j]!=0){
+                                pairs[prob.values[i][j]-1].second++;
+                        }
+                }
+        }
+        priority_queue<pair<int,int> > priority;
+        for(auto it = choices.begin();it!=choices.end();it++){
+                int x = *it;
+                priority.push(pairs[x-1]);
+        }
+        return priority;
+}
+
 string btandfcandmrv(sudoku prob,Choicelist choices,int varchosen = -1){
         if(prob.isComplete())
                 return prob.valuesToString();
@@ -208,8 +237,13 @@ string btandfcandmrv(sudoku prob,Choicelist choices,int varchosen = -1){
                 }
         }
         int var = minvar;
-        for(auto it = choices[var].begin();it!=choices[var].end();it++){
-                prob.values[var/9][var%9] = (*it);
+        //least constraining-value (nearly?This implementation has no proof)
+        priority_queue<pair<int,int> > priority = priorityCheck(prob,choices[var]);
+        while(!priority.empty()){
+                pair<int,int> tmp = priority.top();
+                priority.pop();
+
+                prob.values[var/9][var%9] = tmp.first;
                 if(prob.checkConstraint(var)){
                         result = btandfcandmrv(prob,choices,var);
                         if(result == "failure"){
@@ -223,6 +257,22 @@ string btandfcandmrv(sudoku prob,Choicelist choices,int varchosen = -1){
                         prob.values[var/9][var%9] = 0;
                 }
         }
+
+        // for(auto it = choices[var].begin();it!=choices[var].end();it++){
+                // prob.values[var/9][var%9] = (*it);
+                // if(prob.checkConstraint(var)){
+                        // result = btandfcandmrv(prob,choices,var);
+                        // if(result == "failure"){
+                                // prob.values[var/9][var%9] = 0;
+                        // }
+                        // else{
+                                // return result;
+                        // }
+                // }
+                // else{
+                        // prob.values[var/9][var%9] = 0;
+                // }
+        // }
         return "failure";
 }
 
