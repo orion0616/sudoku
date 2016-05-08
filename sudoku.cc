@@ -108,7 +108,7 @@ void stringToValues(string s){
         }
 }
 
-void updateList(sudoku prob,Choicelist& choices, int varchosen){
+void updateList(sudoku& prob,Choicelist& choices, int varchosen){
         int row = varchosen/9;
         int column = varchosen%9;
         int value = prob.values[row][column];
@@ -138,6 +138,8 @@ void updateList(sudoku prob,Choicelist& choices, int varchosen){
 }
 
 string btandfcandmrv(sudoku prob,Choicelist choices,int varchosen = -1){
+        if(prob.isComplete())
+                return prob.valuesToString();
         if(varchosen == -1){
                 for(int i=0;i<81;i++){
                         if(prob.values[i/9][i%9]!=0)
@@ -148,8 +150,6 @@ string btandfcandmrv(sudoku prob,Choicelist choices,int varchosen = -1){
                 updateList(prob,choices,varchosen);
         }
         string result;
-        if (prob.isComplete())
-                return prob.valuesToString();
         int min = 10;
         int minvar = 100;
         for(int i=0;i<81;i++){
@@ -208,9 +208,10 @@ int main(){
                         if(exp[i] == '.')
                                 problem.values[i/9][i%9] = 0;
                         else{
-                                problem.values[i/9][i%9] = (int)exp[i]-(int)'0';
+                                int var = (int)exp[i]-(int)'0';
+                                problem.values[i/9][i%9] = var;
                                 set<int> tmp;
-                                tmp.insert((int)exp[i]-(int)'0');
+                                tmp.insert(var);
                                 choices[i] = tmp;
                         }
                 }
